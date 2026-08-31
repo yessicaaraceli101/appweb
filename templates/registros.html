@@ -47,6 +47,10 @@
     display:flex;
     align-items:center;
     gap:10px;
+    color:var(--ink);
+    border-bottom:none;
+    padding-bottom:0;
+    text-transform:none;
   }
   .ph h2 .icon{
     width:26px;height:26px;
@@ -160,10 +164,60 @@
   }
   .ph .obs-badge .icon{width:14px;height:14px;flex-shrink:0;margin-top:1px;}
 
-  .ph .vacio{
-    text-align:center;
-    color:#888;
-    padding:32px 20px;
+  .ph .toolbar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:10px;
+    margin:-6px 0 16px;
+  }
+  .ph .toolbar .resumen{
+    font-size:13px;
+    color:var(--ink-faint);
+  }
+  .ph .toolbar .resumen strong{color:var(--ink-soft);font-weight:600;}
+
+  /* --- Paginación --- */
+  .ph .paginacion{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+    flex-wrap:wrap;
+    margin-top:20px;
+    padding-top:18px;
+    border-top:1px solid #f0f1f3;
+  }
+  .ph .pag-btn{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-width:34px;
+    height:34px;
+    padding:0 10px;
+    border-radius:var(--radius-sm);
+    font-size:13px;
+    font-weight:600;
+    color:var(--ink-soft);
+    text-decoration:none;
+    transition:background .15s ease, color .15s ease;
+  }
+  .ph .pag-btn:hover{background:var(--bg-page);}
+  .ph .pag-btn.activo{
+    background:var(--primary);
+    color:#fff;
+  }
+  .ph .pag-btn.disabled{
+    color:var(--ink-faint);
+    opacity:.4;
+    pointer-events:none;
+  }
+  .ph .pag-btn .icon{width:15px;height:15px;}
+  .ph .pag-puntos{
+    color:var(--ink-faint);
+    font-size:13px;
+    padding:0 4px;
   }
 
   /* --- Responsivo: en pantallas chicas la tabla se convierte en tarjetas apiladas --- */
@@ -203,6 +257,16 @@
       </span>
       Panel Historial de Inspecciones
     </h2>
+
+    <div class="toolbar">
+      <span class="resumen">
+        {% if paginacion and paginacion.total %}
+          Mostrando <strong>{{ paginacion.first }}–{{ paginacion.last }}</strong> de <strong>{{ paginacion.total }}</strong> registros
+        {% else %}
+          Sin registros para mostrar
+        {% endif %}
+      </span>
+    </div>
 
     <div class="tabla-wrap">
     <table>
@@ -353,5 +417,41 @@
         </tbody>
     </table>
     </div>
+
+    {% if paginacion and paginacion.pages > 1 %}
+    <nav class="paginacion" aria-label="Paginación del historial">
+        {% if paginacion.has_prev %}
+          <a class="pag-btn" href="{{ url_for('sistema_pestañas', user_id=usuario.id, pestana='registros', page=paginacion.prev_num) }}" aria-label="Página anterior">
+            <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></span>
+          </a>
+        {% else %}
+          <span class="pag-btn disabled" aria-hidden="true">
+            <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></span>
+          </span>
+        {% endif %}
+
+        {% for num in paginacion.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+          {% if num %}
+            {% if num == paginacion.page %}
+              <span class="pag-btn activo" aria-current="page">{{ num }}</span>
+            {% else %}
+              <a class="pag-btn" href="{{ url_for('sistema_pestañas', user_id=usuario.id, pestana='registros', page=num) }}">{{ num }}</a>
+            {% endif %}
+          {% else %}
+            <span class="pag-puntos">…</span>
+          {% endif %}
+        {% endfor %}
+
+        {% if paginacion.has_next %}
+          <a class="pag-btn" href="{{ url_for('sistema_pestañas', user_id=usuario.id, pestana='registros', page=paginacion.next_num) }}" aria-label="Página siguiente">
+            <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></span>
+          </a>
+        {% else %}
+          <span class="pag-btn disabled" aria-hidden="true">
+            <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></span>
+          </span>
+        {% endif %}
+    </nav>
+    {% endif %}
 </div>
 {% endblock %}

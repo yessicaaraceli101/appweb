@@ -15,7 +15,8 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 # ==========================================
-# MODELOS DE BASE DE DATOS
+# MODELOS DE BASE DE 
+# DATOS
 # ==========================================
 class Usuario(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -79,7 +80,13 @@ def sistema_pestañas(user_id, pestana):
         return redirect(url_for('login_web'))
 
     vehiculos = Vehiculo.query.order_by(Vehiculo.nro_movil).all()
-    controles = Checklist.query.order_by(Checklist.id.desc()).all()
+
+    pagina_actual = request.args.get('page', 1, type=int)
+    paginacion = Checklist.query.order_by(Checklist.id.desc()).paginate(
+        page=pagina_actual, per_page=2, error_out=False
+    )
+    controles = paginacion.items
+
     todos_usuarios = Usuario.query.all()
     
     archivo_html = f"{pestana}.html"
@@ -88,6 +95,7 @@ def sistema_pestañas(user_id, pestana):
         usuario=usuario_activo, 
         vehiculos=vehiculos, 
         controles=controles,
+        paginacion=paginacion,
         usuarios=todos_usuarios,
         pestana_activa=pestana
     )
@@ -198,4 +206,3 @@ if __name__ == "__main__":
             db.session.commit()
             
         app.run(debug=True, host='0.0.0.0', port=8080)
-
