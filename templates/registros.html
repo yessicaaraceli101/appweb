@@ -1,0 +1,357 @@
+{% extends "base.html" %}
+{% block contenido %}
+<style>
+  .ph{
+    --ink:#202124;
+    --ink-soft:#555;
+    --ink-faint:#8891A0;
+    --surface:#FFFFFF;
+    --bg-page:#f8f9fa;
+    --primary:#1a73e8;
+    --primary-dark:#1557b0;
+    --primary-soft:#e8f0fe;
+    --danger:#d93025;
+    --ok-bg:#e6f4ea;
+    --ok-fg:#1e7e34;
+    --medio-bg:#ffeeba;
+    --medio-fg:#856404;
+    --money:#2ab759;
+    --radius-lg:16px;
+    --radius-md:10px;
+    --radius-sm:7px;
+    --shadow-card:0 1px 2px rgba(20,30,40,.04), 0 10px 26px -16px rgba(20,30,40,.18);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    color:var(--ink);
+    max-width:1180px;
+    margin:0 auto;
+    padding:20px 16px 48px;
+    box-sizing:border-box;
+  }
+  .ph *{box-sizing:border-box;}
+  .ph .icon{display:inline-flex;flex-shrink:0;line-height:0;vertical-align:middle;}
+  .ph .icon svg{width:100%;height:100%;display:block;}
+
+  .ph.card{
+    background:var(--surface);
+    border:none;
+    box-shadow:var(--shadow-card);
+    border-radius:var(--radius-lg);
+    padding:clamp(14px,3vw,26px);
+  }
+
+  .ph h2{
+    margin:0 0 18px;
+    font-size:clamp(19px,4vw,23px);
+    font-weight:700;
+    letter-spacing:-0.01em;
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .ph h2 .icon{
+    width:26px;height:26px;
+    color:var(--primary);
+  }
+
+  .ph .tabla-wrap{
+    overflow-x:auto;
+    border-radius:var(--radius-md);
+  }
+
+  .ph table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:13.5px;
+  }
+  .ph thead th{
+    text-align:left;
+    font-weight:600;
+    font-size:12px;
+    color:var(--ink-soft);
+    text-transform:none;
+    background:var(--bg-page);
+    padding:11px 12px;
+    white-space:nowrap;
+    position:sticky;
+    top:0;
+  }
+  .ph thead th:first-child{border-top-left-radius:var(--radius-sm);border-bottom-left-radius:var(--radius-sm);}
+  .ph thead th:last-child{border-top-right-radius:var(--radius-sm);border-bottom-right-radius:var(--radius-sm);}
+  .ph th .th-inner{display:flex;align-items:center;gap:6px;}
+  .ph th .icon{width:15px;height:15px;color:var(--primary);}
+
+  .ph tbody td{
+    padding:12px;
+    vertical-align:top;
+    border-bottom:1px solid #f0f1f3;
+  }
+  .ph tbody tr:last-child td{border-bottom:none;}
+  .ph tbody tr:hover td{background:#fafbfc;}
+
+  .ph .movil-chip{
+    font-weight:700;
+    color:var(--primary);
+    font-size:12.5px;
+    white-space:nowrap;
+    display:inline-block;
+  }
+
+  .ph .inspector small{color:var(--ink-faint);}
+
+  .ph .badge{
+    display:inline-flex;
+    align-items:center;
+    gap:5px;
+    font-size:12px;
+  }
+  .ph .badge .icon{width:13px;height:13px;}
+  .ph .badge-fila{margin-bottom:4px;}
+  .ph .badge-fila:last-child{margin-bottom:0;}
+  .ph .badge-ok{color:var(--ok-fg);}
+  .ph .badge-ok .icon{color:var(--ok-fg);}
+  .ph .badge-medio{color:var(--medio-fg);}
+  .ph .badge-medio .icon{color:var(--medio-fg);}
+  .ph .badge-alerta{color:var(--danger);}
+  .ph .badge-alerta .icon{color:var(--danger);}
+
+  .ph .luces-set{display:flex;flex-wrap:wrap;gap:5px;}
+  .ph .luz-chip{
+    display:inline-flex;
+    align-items:center;
+    gap:4px;
+    font-size:11.5px;
+    font-weight:600;
+  }
+  .ph .luz-chip .icon{width:12px;height:12px;}
+  .ph .luz-chip.ok{color:var(--ok-fg);}
+  .ph .luz-chip.alerta{color:var(--danger);}
+
+  .ph .km{font-weight:700;}
+  .ph .tanque-chip{
+    display:inline-flex;
+    align-items:center;
+    gap:5px;
+    margin-top:5px;
+    color:var(--ok-fg);
+    font-size:11.5px;
+    font-weight:600;
+  }
+  .ph .tanque-chip .icon{width:12px;height:12px;}
+
+  .ph .abastecimiento-linea{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    margin-bottom:4px;
+  }
+  .ph .abastecimiento-linea:last-child{margin-bottom:0;}
+  .ph .abastecimiento-linea .icon{width:14px;height:14px;color:var(--ink-faint);}
+  .ph .litros{color:var(--primary);font-weight:700;}
+  .ph .gasto{color:var(--money);font-weight:700;}
+  .ph .sin-datos{color:#aaa;font-style:italic;}
+
+  .ph .obs-badge{
+    display:flex;
+    align-items:flex-start;
+    gap:6px;
+    color:#c92a2a;
+    font-size:12.5px;
+    line-height:1.4;
+  }
+  .ph .obs-badge .icon{width:14px;height:14px;flex-shrink:0;margin-top:1px;}
+
+  .ph .vacio{
+    text-align:center;
+    color:#888;
+    padding:32px 20px;
+  }
+
+  /* --- Responsivo: en pantallas chicas la tabla se convierte en tarjetas apiladas --- */
+  @media (max-width:760px){
+    .ph thead{display:none;}
+    .ph table, .ph tbody, .ph tr, .ph td{display:block;width:100%;}
+    .ph tbody tr{
+      background:var(--surface);
+      border-radius:var(--radius-md);
+      box-shadow:var(--shadow-card);
+      margin-bottom:12px;
+      padding:6px 4px;
+    }
+    .ph tbody tr:hover td{background:transparent;}
+    .ph tbody td{
+      border-bottom:none;
+      padding:8px 12px;
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+    }
+    .ph tbody td::before{
+      content:attr(data-label);
+      font-size:11px;
+      font-weight:700;
+      text-transform:uppercase;
+      letter-spacing:.03em;
+      color:var(--ink-faint);
+    }
+  }
+</style>
+
+<div class="ph card" style="overflow-x: auto;">
+    <h2>
+      <span class="icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V5"/><path d="M4 19h16"/><rect x="7" y="12" width="3" height="7" rx=".8"/><rect x="12.5" y="8" width="3" height="11" rx=".8"/><rect x="18" y="14.5" width="3" height="4.5" rx=".8"/></svg>
+      </span>
+      Panel Historial de Inspecciones
+    </h2>
+
+    <div class="tabla-wrap">
+    <table>
+        <thead>
+            <tr>
+                <th><span class="th-inner">Fecha / Hora</span></th>
+                <th><span class="th-inner">Móvil</span></th>
+                <th><span class="th-inner">Inspector</span></th>
+                <th><span class="th-inner">Niveles de Fluidos</span></th>
+                <th><span class="th-inner">Luces</span></th>
+                <th><span class="th-inner">Kilometraje</span></th>
+                <th>
+                  <span class="th-inner">
+                    <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V6a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v15"/><path d="M4 21h10"/><path d="M14 10.5h2.2l2.3 2.3v5.2a1.5 1.5 0 0 1-3 0V16"/></svg></span>
+                    Datos Abastecimiento
+                  </span>
+                </th>
+                <th>
+                  <span class="th-inner">
+                    <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5l9.5 16.5h-19z"/><path d="M12 10v4"/><path d="M12 17h.01"/></svg></span>
+                    Novedades
+                  </span>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for c in controles %}
+            <tr>
+                <!-- 1. FECHA Y HORA -->
+                <td data-label="Fecha / Hora"><strong>{{ c.fecha_control }}</strong></td>
+
+                <!-- 2. NÚMERO DE MÓVIL -->
+                <td data-label="Móvil"><span class="movil-chip">Móvil {{ c.vehiculo.nro_movil }}</span></td>
+
+                <!-- 3. NOMBRE DE INSPECTOR Y ROL -->
+                <td data-label="Inspector" class="inspector">{{ c.usuario.nombre }} <br><small>({{ c.usuario.rol }})</small></td>
+
+                <!-- 4. NIVELES DE FLUIDOS (EVALUACIÓN DE STRINGS LIMPIA) -->
+                <td data-label="Niveles de Fluidos">
+                    <!-- Control de Aceite -->
+                    {% if c.aceite == 'Bajo' %}
+                        <span class="badge badge-fila badge-alerta"><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8V5.5A1.5 1.5 0 0 1 7.5 4H10l2 2h2.5A1.5 1.5 0 0 1 16 7.5V8"/><rect x="5" y="8" width="12" height="12" rx="1.5"/></svg></span>Aceite: Bajo</span>
+                    {% elif c.aceite == 'Medio' %}
+                        <span class="badge badge-fila badge-medio"><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8V5.5A1.5 1.5 0 0 1 7.5 4H10l2 2h2.5A1.5 1.5 0 0 1 16 7.5V8"/><rect x="5" y="8" width="12" height="12" rx="1.5"/></svg></span>Aceite: Medio</span>
+                    {% else %}
+                        <span class="badge badge-fila badge-ok"><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8V5.5A1.5 1.5 0 0 1 7.5 4H10l2 2h2.5A1.5 1.5 0 0 1 16 7.5V8"/><rect x="5" y="8" width="12" height="12" rx="1.5"/></svg></span>Aceite: Óptimo</span>
+                    {% endif %}
+                    <br>
+
+                    <!-- Control de Agua -->
+                    {% if c.agua == 'Bajo' %}
+                        <span class="badge badge-fila badge-alerta"><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5s6 7 6 11.2a6 6 0 0 1-12 0c0-4.2 6-11.2 6-11.2z"/></svg></span>Agua: Bajo</span>
+                    {% elif c.agua == 'Medio' %}
+                        <span class="badge badge-fila badge-medio"><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5s6 7 6 11.2a6 6 0 0 1-12 0c0-4.2 6-11.2 6-11.2z"/></svg></span>Agua: Medio</span>
+                    {% else %}
+                        <span class="badge badge-fila badge-ok"><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5s6 7 6 11.2a6 6 0 0 1-12 0c0-4.2 6-11.2 6-11.2z"/></svg></span>Agua: Óptimo</span>
+                    {% endif %}
+                    <br>
+
+                    <!-- Control de Frenos -->
+                    {% if c.fluido == 'Bajo' %}
+                        <span class="badge badge-fila badge-alerta"><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="3"/></svg></span>Frenos: Bajo</span>
+                    {% elif c.fluido == 'Medio' %}
+                        <span class="badge badge-fila badge-medio"><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="3"/></svg></span>Frenos: Medio</span>
+                    {% else %}
+                        <span class="badge badge-fila badge-ok"><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="3"/></svg></span>Frenos: Óptimo</span>
+                    {% endif %}
+                    <br>
+
+                    <!-- Control de Otros Fluidos -->
+                    {% if c.otros_fluidos == 'Bajo' %}
+                        <span class="badge badge-fila badge-alerta"><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 5.5v2.2M12 16.3v2.2M5.5 12h2.2M16.3 12h2.2"/></svg></span>Otros: Bajo</span>
+                    {% elif c.otros_fluidos == 'Medio' %}
+                        <span class="badge badge-fila badge-medio"><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 5.5v2.2M12 16.3v2.2M5.5 12h2.2M16.3 12h2.2"/></svg></span>Otros: Medio</span>
+                    {% else %}
+                        <span class="badge badge-fila badge-ok"><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 5.5v2.2M12 16.3v2.2M5.5 12h2.2M16.3 12h2.2"/></svg></span>Otros: Óptimo</span>
+                    {% endif %}
+                </td>
+
+                <!-- 5. ESTADO DE LUCES (BOOLEANOS) -->
+                <td data-label="Luces">
+                    <div class="luces-set">
+                        <span class="luz-chip {% if c.luces_freno %}ok{% else %}alerta{% endif %}">
+                          <span class="icon" aria-hidden="true">{% if c.luces_freno %}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>{% else %}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>{% endif %}</span>
+                          Freno
+                        </span>
+                        <span class="luz-chip {% if c.luz_baja %}ok{% else %}alerta{% endif %}">
+                          <span class="icon" aria-hidden="true">{% if c.luz_baja %}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>{% else %}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>{% endif %}</span>
+                          Baja
+                        </span>
+                        <span class="luz-chip {% if c.luz_alta %}ok{% else %}alerta{% endif %}">
+                          <span class="icon" aria-hidden="true">{% if c.luz_alta %}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>{% else %}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>{% endif %}</span>
+                          Alta
+                        </span>
+                        <span class="luz-chip {% if c.senaleros %}ok{% else %}alerta{% endif %}">
+                          <span class="icon" aria-hidden="true">{% if c.senaleros %}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>{% else %}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>{% endif %}</span>
+                          Giro
+                        </span>
+                    </div>
+                </td>
+
+                <!-- 6. KILOMETRAJE Y NIVEL DEL TANQUE -->
+                <td data-label="Kilometraje">
+                    <span class="km">{{ c.kilometraje_actual }} KM</span><br>
+                    <span class="tanque-chip">
+                      <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V6a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v15"/><path d="M4 21h10"/></svg></span>
+                      Tanque: {{ c.combustible_nivel }}
+                    </span>
+                </td>
+
+                <!-- 7. CONTROL PARALELO DE ABASTECIMIENTO FINANCIERO -->
+                <td data-label="Datos Abastecimiento">
+                    {% if c.fecha_abastecimiento %}
+                        <div class="abastecimiento-linea">
+                          <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="16" rx="2.2"/><path d="M3.5 9.5h17"/><path d="M8 3v4"/><path d="M16 3v4"/></svg></span>
+                          <strong>{{ c.fecha_abastecimiento }}</strong>
+                        </div>
+                        <div class="abastecimiento-linea">
+                          <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6"/><path d="M10 3v6l-5 9.5a1.5 1.5 0 0 0 1.3 2.2h11.4a1.5 1.5 0 0 0 1.3-2.2L14 9V3"/></svg></span>
+                          Litros: <span class="litros">{{ c.litros_cargados }} Lts</span>
+                        </div>
+                        <div class="abastecimiento-linea">
+                          <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5v9M9.5 9.7c0-1.2 1.1-2.2 2.5-2.2s2.5.8 2.5 1.9-1 1.6-2.5 1.9-2.5.8-2.5 1.9 1.1 1.9 2.5 1.9 2.5-1 2.5-2.2"/></svg></span>
+                          Gasto: <span class="gasto">₲ {{ c.monto_gastado }}</span>
+                        </div>
+                    {% else %}
+                        <span class="sin-datos">Sin cargas hoy</span>
+                    {% endif %}
+                </td>
+
+                <!-- 8. OBSERVACIONES O NOVEDADES MECÁNICAS -->
+                <td data-label="Novedades">
+                    {% if c.observaciones_mecanica %}
+                        <span class="obs-badge">
+                          <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 3.5a3 3 0 0 1 4.2 4.2l-9 9-4.7 1.5 1.5-4.7z"/></svg></span>
+                          {{ c.observaciones_mecanica }}
+                        </span>
+                    {% else %}
+                        <span class="sin-datos">Sin novedades</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="8" class="vacio">No hay registros cargados todavía.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    </div>
+</div>
+{% endblock %}

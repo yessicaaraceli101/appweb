@@ -1,0 +1,397 @@
+{% extends "base.html" %}
+{% block contenido %}
+<style>
+  .pa{
+    --ink:#202124;
+    --ink-soft:#555;
+    --ink-faint:#8891A0;
+    --surface:#FFFFFF;
+    --bg-page:#f8f9fa;
+    --primary:#1a73e8;
+    --primary-dark:#1557b0;
+    --green:#2ab759;
+    --amber:#f4b400;
+    --danger:#d93025;
+    --radius-lg:16px;
+    --radius-md:10px;
+    --radius-sm:7px;
+    --shadow-card:0 1px 2px rgba(20,30,40,.04), 0 10px 26px -16px rgba(20,30,40,.18);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    color:var(--ink);
+    max-width:1180px;
+    margin:0 auto;
+    padding:20px 16px 48px;
+    box-sizing:border-box;
+  }
+  .pa *{box-sizing:border-box;}
+  .pa .icon{display:inline-flex;flex-shrink:0;line-height:0;vertical-align:middle;}
+  .pa .icon svg{width:100%;height:100%;display:block;}
+
+  .pa .seccion-flex{
+    display:flex;
+    flex-wrap:wrap;
+    gap:18px;
+  }
+
+  .pa .card{
+    background:var(--surface);
+    border:none;
+    box-shadow:var(--shadow-card);
+    border-radius:var(--radius-lg);
+    padding:clamp(16px,3vw,26px);
+    flex:1 1 320px;
+    margin-top:0;
+  }
+
+  .pa h2{
+    margin:0 0 18px;
+    font-size:17px;
+    font-weight:700;
+    letter-spacing:-0.01em;
+    display:flex;
+    align-items:center;
+    gap:9px;
+  }
+  .pa h2 .icon{width:21px;height:21px;color:inherit;}
+
+  .pa .campo{margin-bottom:14px;}
+  .pa .campo:last-of-type{margin-bottom:18px;}
+  .pa .campo label{
+    display:block;
+    font-size:13.5px;
+    font-weight:600;
+    color:var(--ink-soft);
+    margin-bottom:6px;
+  }
+  .pa select,
+  .pa input[type="text"],
+  .pa input[type="password"],
+  .pa input[type="number"]{
+    width:100%;
+    padding:10px 12px;
+    font-size:14.5px;
+    font-family:inherit;
+    color:var(--ink);
+    background:var(--bg-page);
+    border:none;
+    border-radius:var(--radius-sm);
+    outline:2px solid transparent;
+    transition:outline-color .15s ease, background .15s ease;
+    appearance:none;
+    -webkit-appearance:none;
+  }
+  .pa select{
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
+    background-repeat:no-repeat;
+    background-position:right 12px center;
+    background-size:15px;
+    padding-right:34px;
+  }
+  .pa select:focus-visible,
+  .pa input:focus-visible{
+    outline-color:var(--primary);
+    background:var(--surface);
+  }
+
+  .pa form > button[type="submit"]{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    width:100%;
+    border:none;
+    background:var(--primary);
+    color:#fff;
+    font-size:14.5px;
+    font-weight:700;
+    font-family:inherit;
+    padding:12px 16px;
+    border-radius:var(--radius-md);
+    cursor:pointer;
+    transition:filter .15s ease, transform .1s ease;
+  }
+  .pa form > button[type="submit"] .icon{width:17px;height:17px;}
+  .pa form > button[type="submit"]:hover{filter:brightness(0.92);}
+  .pa form > button[type="submit"]:active{transform:translateY(1px);}
+  .pa form > button[type="submit"].verde{background:var(--green);}
+
+  /* --- Tablas --- */
+  .pa .card-tabla{margin-top:20px;}
+  .pa .tabla-wrap{overflow-x:auto;border-radius:var(--radius-md);}
+  .pa table{width:100%;border-collapse:collapse;font-size:13.5px;}
+  .pa thead th{
+    text-align:left;
+    font-weight:600;
+    font-size:12px;
+    color:var(--ink-soft);
+    background:var(--bg-page);
+    padding:11px 10px;
+    white-space:nowrap;
+  }
+  .pa thead th:first-child{border-top-left-radius:var(--radius-sm);border-bottom-left-radius:var(--radius-sm);}
+  .pa thead th:last-child{border-top-right-radius:var(--radius-sm);border-bottom-right-radius:var(--radius-sm);}
+  .pa thead th.centro{text-align:center;}
+
+  .pa tbody td{
+    padding:9px 10px;
+    vertical-align:middle;
+    border-bottom:1px solid #dee2e6;
+  }
+  .pa tbody tr:last-child td{border-bottom:none;}
+
+  .pa tbody input[type="text"],
+  .pa tbody input[type="number"]{
+    padding:7px 9px;
+    font-size:13px;
+    width:100%;
+  }
+  .pa tbody select{
+    padding:7px 9px;
+    font-size:13px;
+    width:100%;
+    background-size:13px;
+    padding-right:28px;
+  }
+  .pa .nro-movil-input{
+    color:var(--primary);
+    font-weight:700;
+  }
+
+  .pa .btn-guardar{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    border:none;
+    color:#fff;
+    padding:7px 12px;
+    font-size:12px;
+    font-weight:700;
+    border-radius:var(--radius-sm);
+    cursor:pointer;
+    width:auto;
+    white-space:nowrap;
+    transition:filter .15s ease;
+  }
+  .pa .btn-guardar .icon{width:13px;height:13px;}
+  .pa .btn-guardar:hover{filter:brightness(0.92);}
+  .pa .btn-guardar.amber{background:var(--amber);}
+  .pa .btn-guardar.verde{background:var(--green);}
+
+  /* --- Responsivo: tabla a tarjetas apiladas en pantallas chicas --- */
+  @media (max-width:760px){
+    .pa thead{display:none;}
+    .pa table, .pa tbody, .pa tr, .pa td{display:block;width:100%;}
+    .pa tbody tr{
+      background:var(--surface);
+      border-radius:var(--radius-md);
+      box-shadow:var(--shadow-card);
+      margin-bottom:12px;
+      padding:4px 4px 10px;
+    }
+    .pa tbody td{
+      border-bottom:none;
+      padding:7px 12px;
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+    }
+    .pa tbody td::before{
+      content:attr(data-label);
+      font-size:11px;
+      font-weight:700;
+      text-transform:uppercase;
+      letter-spacing:.03em;
+      color:var(--ink-faint);
+    }
+    .pa tbody td.accion{align-items:flex-start;}
+  }
+</style>
+
+<div class="pa">
+
+<!-- ======================================================= -->
+<!-- BLOQUE 1: FORMULARIOS DE ALTA DE NUEVOS REGISTROS      -->
+<!-- ======================================================= -->
+<div class="seccion-flex">
+    <!-- Registrar Personal -->
+    <div class="card">
+        <h2>
+          <span class="icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3 19c.8-3.5 3.2-5.4 6-5.4s5.2 1.9 6 5.4"/><circle cx="17" cy="8.5" r="2.6"/><path d="M15.5 13.3c2.4.2 4.2 2 4.8 4.6"/></svg>
+          </span>
+          Registrar Nuevo Chofer / Operador
+        </h2>
+        <form action="/registrar-usuario-nuevo" method="POST">
+            <input type="hidden" name="admin_id" value="{{ usuario.id }}">
+            <div class="campo">
+                <label for="nombre_nuevo">Nombre y Apellido:</label>
+                <input type="text" name="nombre_nuevo" id="nombre_nuevo" required placeholder="Ej: Néstor Benítez">
+            </div>
+            <div class="campo">
+                <label for="clave_nueva">Contraseña Corporativa:</label>
+                <input type="password" name="clave_nueva" id="clave_nueva" placeholder="Cree una clave (Dejar vacío si no aplica)">
+            </div>
+            <div class="campo">
+                <label for="rol_nuevo">Rol asignado:</label>
+                <select name="rol_nuevo" id="rol_nuevo">
+                    <option value="Chofer">Chofer</option>
+                    <option value="Mecánico">Mecánico</option>
+                    <option value="Admin">Administrador</option>
+                </select>
+            </div>
+            <button type="submit">
+              <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg></span>
+              Dar de Alta Personal
+            </button>
+        </form>
+    </div>
+
+    <!-- Registrar Vehículos -->
+    <div class="card">
+        <h2>
+          <span class="icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 16V9.5a1 1 0 0 1 .2-.6l2-2.6a1 1 0 0 1 .8-.4h9.5a1 1 0 0 1 .8.4l3 3.6"/><path d="M2.5 16h19"/><rect x="2.5" y="12" width="19" height="4" rx="1.2"/><circle cx="7.5" cy="18.5" r="1.8"/><circle cx="17" cy="18.5" r="1.8"/></svg>
+          </span>
+          Registrar Nuevo Vehículo a la Flota
+        </h2>
+        <form action="/registrar-vehiculo-nuevo" method="POST">
+            <input type="hidden" name="admin_id" value="{{ usuario.id }}">
+            <div class="campo">
+                <label for="nro_movil">Número de Móvil:</label>
+                <input type="number" name="nro_movil" id="nro_movil" required placeholder="Ej: 11">
+            </div>
+            <div class="campo">
+                <label for="marca">Marca de la Unidad:</label>
+                <input type="text" name="marca" id="marca" placeholder="Ej: Toyota" required>
+            </div>
+            <div class="campo">
+                <label for="modelo">Modelo de la Unidad:</label>
+                <input type="text" name="modelo" id="modelo" placeholder="Ej: Hilux" required>
+            </div>
+            <div class="campo">
+                <label for="ano">Año del Vehículo:</label>
+                <input type="number" name="ano" id="ano" placeholder="Ej: 2024" required>
+            </div>
+            <button type="submit" class="verde">
+              <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg></span>
+              Dar de Alta Móvil
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- ======================================================= -->
+<!-- BLOQUE 2: TABLA DE USUARIOS GENERAL                     -->
+<!-- ======================================================= -->
+<div class="card card-tabla" style="overflow-x: auto;">
+    <h2>
+      <span class="icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3 19c.8-3.5 3.2-5.4 6-5.4s5.2 1.9 6 5.4"/><circle cx="17" cy="8.5" r="2.6"/><path d="M15.5 13.3c2.4.2 4.2 2 4.8 4.6"/></svg>
+      </span>
+      Listado y Modificación de Usuarios (Total: {{ usuarios|length }})
+    </h2>
+    <div class="tabla-wrap">
+    <table>
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Seña / Contraseña</th>
+                <th>Rol de Usuario</th>
+                <th class="centro">Activo</th>
+                <th class="centro">Acción</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for u in usuarios %}
+            <tr>
+                <form action="/editar-usuario" method="POST">
+                    <input type="hidden" name="admin_id" value="{{ usuario.id }}">
+                    <input type="hidden" name="usuario_id_editar" value="{{ u.id }}">
+
+                    <td data-label="Nombre">
+                        <input type="text" name="nombre_editado" value="{{ u.nombre }}" required>
+                    </td>
+                    <td data-label="Seña / Contraseña">
+                        <input type="text" name="clave_editada" value="{{ u.contrasena }}" placeholder="Sin seña">
+                    </td>
+                    <td data-label="Rol de Usuario">
+                        <select name="rol_editado">
+                            <option value="Chofer" {% if u.rol == 'Chofer' %}selected{% endif %}>Chofer</option>
+                            <option value="Mecánico" {% if u.rol == 'Mecánico' %}selected{% endif %}>Mecánico</option>
+                            <option value="Admin" {% if u.rol == 'Admin' %}selected{% endif %}>Admin</option>
+                        </select>
+                    </td>
+                    <td data-label="Activo" class="accion" style="text-align:center;">
+                        <input type="checkbox" name="activo_editado" value="True" {% if u.activo %}checked{% endif %} style="width:19px;height:19px;accent-color:var(--green);">
+                        <input type="hidden" name="activo_editado" value="False">
+                    </td>
+                    <td data-label="Acción" class="accion" style="text-align:center;">
+                        <button type="submit" class="btn-guardar amber">
+                          <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h11l3 3v13H5z"/><path d="M8 4v5h7V4"/><path d="M8 13h8v6H8z"/></svg></span>
+                          Guardar
+                        </button>
+                    </td>
+                </form>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    </div>
+</div>
+
+<!-- ======================================================= -->
+<!-- BLOQUE 3: TABLA DE VEHÍCULOS GENERAL                    -->
+<!-- ======================================================= -->
+<div class="card card-tabla" style="overflow-x: auto;">
+    <h2>
+      <span class="icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 16V9.5a1 1 0 0 1 .2-.6l2-2.6a1 1 0 0 1 .8-.4h9.5a1 1 0 0 1 .8.4l3 3.6"/><path d="M2.5 16h19"/><rect x="2.5" y="12" width="19" height="4" rx="1.2"/><circle cx="7.5" cy="18.5" r="1.8"/><circle cx="17" cy="18.5" r="1.8"/></svg>
+      </span>
+      Vehículos Registrados en la Flota (Total: {{ vehiculos|length }})
+    </h2>
+    <div class="tabla-wrap">
+    <table>
+        <thead>
+            <tr>
+                <th>Nro. Móvil</th>
+                <th>Marca</th>
+                <th>Modelo</th>
+                <th>Año</th>
+                <th class="centro">Acción</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for v in vehiculos %}
+            <tr>
+                <form action="/editar-vehiculo" method="POST">
+                    <input type="hidden" name="admin_id" value="{{ usuario.id }}">
+                    <input type="hidden" name="vehiculo_id_editar" value="{{ v.id }}">
+
+                    <td data-label="Nro. Móvil">
+                        <input type="number" name="nro_editado" value="{{ v.nro_movil }}" required class="nro-movil-input">
+                    </td>
+                    <td data-label="Marca">
+                        <input type="text" name="marca_editada" value="{{ v.marca }}" required>
+                    </td>
+                    <td data-label="Modelo">
+                        <input type="text" name="modelo_editado" value="{{ v.modelo }}" required>
+                    </td>
+                    <td data-label="Año">
+                        <input type="number" name="ano_editado" value="{{ v.ano }}" required>
+                    </td>
+                    <td data-label="Acción" class="accion" style="text-align:center;">
+                        <button type="submit" class="btn-guardar verde">
+                          <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h11l3 3v13H5z"/><path d="M8 4v5h7V4"/><path d="M8 13h8v6H8z"/></svg></span>
+                          Guardar
+                        </button>
+                    </td>
+                </form>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    </div>
+</div>
+
+</div>
+{% endblock %}

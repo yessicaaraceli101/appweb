@@ -1,0 +1,508 @@
+{% extends "base.html" %}
+{% block contenido %}
+<style>
+  .cv{
+    --ink:#202124;
+    --ink-soft:#555;
+    --ink-faint:#8891A0;
+    --surface:#FFFFFF;
+    --bg-page:#f8f9fa;
+    --primary:#1a73e8;
+    --primary-dark:#1557b0;
+    --primary-soft:#e8f0fe;
+    --danger:#d93025;
+    --radius-lg:16px;
+    --radius-md:10px;
+    --radius-sm:8px;
+    --shadow-card:0 1px 2px rgba(20,30,40,.04), 0 10px 26px -16px rgba(20,30,40,.18);
+    --shadow-raised:0 2px 6px rgba(20,30,40,.08), 0 14px 30px -14px rgba(26,115,232,.35);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    color:var(--ink);
+    max-width:720px;
+    margin:0 auto;
+    padding:20px 16px 48px;
+    box-sizing:border-box;
+  }
+  .cv *{box-sizing:border-box;}
+  .cv .icon{display:inline-flex;flex-shrink:0;line-height:0;}
+  .cv .icon svg{width:100%;height:100%;display:block;}
+
+  .cv.card{background:transparent;border:none;box-shadow:none;padding:0;}
+
+  .cv .encabezado{
+    background:var(--surface);
+    border-radius:var(--radius-lg);
+    box-shadow:var(--shadow-card);
+    padding:20px clamp(16px,4vw,28px);
+    margin-bottom:22px;
+  }
+  .cv .encabezado h2{
+    margin:0 0 16px;
+    font-size:clamp(19px,4vw,23px);
+    font-weight:700;
+    letter-spacing:-0.01em;
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .cv .encabezado h2 .icon{width:24px;height:24px;color:var(--primary);}
+  .cv .encabezado .meta{
+    background:var(--primary-soft);
+    border-radius:var(--radius-md);
+    padding:14px 16px;
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+  }
+  .cv .encabezado .meta-row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-size:14px;
+    color:var(--primary-dark);
+  }
+  .cv .encabezado .meta-row .icon{width:18px;height:18px;color:var(--primary);}
+  .cv .encabezado .meta-row .rol{color:var(--danger);font-weight:700;}
+  .cv .encabezado .meta-row strong{font-weight:600;}
+
+  .cv form{display:flex;flex-direction:column;gap:22px;}
+
+  .cv section.bloque{
+    background:var(--surface);
+    border-radius:var(--radius-lg);
+    box-shadow:var(--shadow-card);
+    padding:clamp(16px,4vw,26px);
+  }
+  .cv .bloque-titulo{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin:0 0 16px;
+    font-size:16px;
+    font-weight:700;
+  }
+  .cv .bloque-titulo .icon{
+    width:34px;height:34px;
+    border-radius:10px;
+    background:var(--primary-soft);
+    color:var(--primary);
+    align-items:center;justify-content:center;
+    padding:7px;
+  }
+  .cv .bloque-subtexto{
+    font-size:12.5px;
+    color:var(--ink-faint);
+    margin:-10px 0 16px;
+  }
+
+  .cv .campo{margin-bottom:16px;}
+  .cv .campo:last-child{margin-bottom:0;}
+  .cv .campo label{
+    display:block;
+    font-size:13.5px;
+    font-weight:600;
+    color:var(--ink-soft);
+    margin-bottom:6px;
+  }
+  .cv select,
+  .cv input[type="text"],
+  .cv input[type="number"]{
+    width:100%;
+    padding:11px 12px;
+    font-size:15px;
+    font-family:inherit;
+    color:var(--ink);
+    background:var(--bg-page);
+    border:none;
+    border-radius:var(--radius-sm);
+    outline:2px solid transparent;
+    transition:outline-color .15s ease, background .15s ease;
+    appearance:none;
+    -webkit-appearance:none;
+  }
+  .cv select{
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
+    background-repeat:no-repeat;
+    background-position:right 12px center;
+    background-size:16px;
+    padding-right:36px;
+  }
+  .cv select:focus-visible,
+  .cv input[type="text"]:focus-visible,
+  .cv input[type="number"]:focus-visible{
+    outline-color:var(--primary);
+    background:var(--surface);
+  }
+
+  /* --- Fluidos: mismos radios circulares, sin borde en la tarjeta --- */
+  .cv .fluido{
+    background:var(--bg-page);
+    border-radius:var(--radius-md);
+    padding:12px 14px;
+    margin-bottom:12px;
+  }
+  .cv .fluido:last-child{margin-bottom:0;}
+  .cv .fluido-titulo{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-weight:700;
+    font-size:14px;
+    margin-bottom:8px;
+    color:var(--primary);
+  }
+  .cv .fluido-titulo .icon{width:18px;height:18px;color:var(--primary);}
+  .cv .fluido-opciones{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:10px;
+  }
+  .cv .fluido-opciones label{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    font-size:14px;
+    cursor:pointer;
+    color:var(--ink);
+  }
+  .cv .fluido-opciones input[type="radio"]{
+    width:18px;
+    height:18px;
+    margin:0;
+    accent-color:var(--primary);
+    cursor:pointer;
+  }
+  .cv .fluido-opciones label.opt-bajo{
+    color:var(--danger);
+    font-weight:500;
+  }
+  .cv .fluido-opciones label.opt-bajo input[type="radio"]{accent-color:var(--danger);}
+  .cv .fluido-opciones .aviso{display:inline-flex;align-items:center;gap:4px;}
+  .cv .fluido-opciones .aviso .icon{width:13px;height:13px;}
+
+  /* --- Iluminación --- */
+  .cv .luces-grid{display:grid;grid-template-columns:1fr;gap:8px;}
+  .cv .checkbox-group{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    background:var(--bg-page);
+    border-radius:var(--radius-md);
+    padding:12px 14px;
+    cursor:pointer;
+    margin:0;
+    font-size:14.5px;
+    font-weight:500;
+  }
+  .cv .checkbox-group .icon{width:20px;height:20px;color:var(--ink-faint);transition:color .15s ease;}
+  .cv .checkbox-group input[type="checkbox"]{
+    width:19px;height:19px;
+    accent-color:var(--primary);
+    margin-left:auto;
+    flex-shrink:0;
+  }
+  .cv .checkbox-group:has(input:checked){background:var(--primary-soft);}
+  .cv .checkbox-group:has(input:checked) .icon{color:var(--primary);}
+
+  /* --- Carga paralela --- */
+  .cv .bloque-destacado{background:var(--primary-soft);}
+  .cv .bloque-destacado .campo label{color:var(--primary-dark);}
+  .cv .bloque-destacado select,
+  .cv .bloque-destacado input{background:var(--surface);}
+  .cv .fila-doble{display:grid;grid-template-columns:1fr;gap:14px 16px;}
+
+  .cv button[type="submit"]{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:9px;
+    width:100%;
+    border:none;
+    background:var(--primary);
+    color:#fff;
+    font-size:15.5px;
+    font-weight:700;
+    font-family:inherit;
+    padding:15px 18px;
+    border-radius:var(--radius-md);
+    cursor:pointer;
+    box-shadow:var(--shadow-raised);
+    transition:background .15s ease, transform .1s ease;
+  }
+  .cv button[type="submit"] .icon{width:19px;height:19px;}
+  .cv button[type="submit"]:hover{background:var(--primary-dark);}
+  .cv button[type="submit"]:active{transform:translateY(1px);}
+  .cv button[type="submit"]:focus-visible{outline:3px solid var(--primary-dark);outline-offset:2px;}
+
+  @media (min-width:640px){
+    .cv{padding-top:32px;}
+    .cv .fila-doble{grid-template-columns:1fr 1fr;}
+    .cv .luces-grid{grid-template-columns:1fr 1fr;}
+  }
+  @media (min-width:900px){
+    .cv{max-width:760px;}
+  }
+</style>
+
+<div class="cv card card-formulario">
+
+  <div class="encabezado">
+    <h2>
+      <span class="icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4"/><path d="M5 4h14a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z"/></svg>
+      </span>
+      Planilla de Verificación Diaria
+    </h2>
+    <div class="meta">
+      <div class="meta-row">
+        <span class="icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.4"/><path d="M4.5 20c1.4-4 4.2-6 7.5-6s6.1 2 7.5 6"/></svg>
+        </span>
+        Chofer / Inspector: <strong>{{ usuario.nombre }}</strong> (<span class="rol">{{ usuario.rol }}</span>)
+      </div>
+      <div class="meta-row">
+        <span class="icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="16" rx="2.2"/><path d="M3.5 9.5h17"/><path d="M8 3v4"/><path d="M16 3v4"/></svg>
+        </span>
+        Fecha de control: <strong>30/08/2026</strong>
+      </div>
+    </div>
+  </div>
+
+  <form action="/guardar-checklist-web" method="POST">
+    <input type="hidden" name="usuario_id" value="{{ usuario.id }}">
+
+    <!-- 1. SELECCIÓN DE UNIDAD -->
+    <section class="bloque">
+      <h3 class="bloque-titulo">
+        <span class="icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 16V9.5a1 1 0 0 1 .2-.6l2-2.6a1 1 0 0 1 .8-.4h9.5a1 1 0 0 1 .8.4l3 3.6"/><path d="M2.5 16h19"/><rect x="2.5" y="12" width="19" height="4" rx="1.2"/><circle cx="7.5" cy="18.5" r="1.8"/><circle cx="17" cy="18.5" r="1.8"/></svg>
+        </span>
+        Selección de Unidad
+      </h3>
+      <div class="campo">
+        <label for="vehiculo_id">Número de Móvil Asignado:</label>
+        <select name="vehiculo_id" id="vehiculo_id" required>
+            <option value="" disabled selected>Elija el vehículo...</option>
+            {% for v in vehiculos %}
+                <option value="{{ v.id }}">Móvil {{ v.nro_movil }} — {{ v.marca }} {{ v.modelo }}</option>
+            {% endfor %}
+        </select>
+      </div>
+    </section>
+
+    <!-- 2. CONTROL DE FLUIDOS EN TRES NIVELES -->
+    <section class="bloque">
+      <h3 class="bloque-titulo">
+        <span class="icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z"/></svg>
+        </span>
+        Control de Niveles de Fluidos
+      </h3>
+      <p class="bloque-subtexto">Marque un nivel para cada fluido:</p>
+
+      <!-- CONTROL DE ACEITE -->
+      <div class="fluido">
+        <div class="fluido-titulo">
+          <span class="icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8V5.5A1.5 1.5 0 0 1 7.5 4H10l2 2h2.5A1.5 1.5 0 0 1 16 7.5V8"/><rect x="5" y="8" width="12" height="12" rx="1.5"/><path d="M17 11h2.2a.8.8 0 0 1 .8.8V14"/></svg>
+          </span>
+          Aceite de Motor
+        </div>
+        <div class="fluido-opciones">
+          <label><input type="radio" name="aceite" value="Optimo" required> Óptimo</label>
+          <label><input type="radio" name="aceite" value="Medio"> Medio</label>
+          <label class="opt-bajo"><input type="radio" name="aceite" value="Bajo">
+            <span class="aviso">Bajo
+              <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5l9.5 16.5h-19z"/><path d="M12 10v4"/><path d="M12 17h.01"/></svg></span>
+            </span>
+          </label>
+        </div>
+      </div>
+
+      <!-- CONTROL DE AGUA -->
+      <div class="fluido">
+        <div class="fluido-titulo">
+          <span class="icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5s6 7 6 11.2a6 6 0 0 1-12 0c0-4.2 6-11.2 6-11.2z"/></svg>
+          </span>
+          Agua / Refrigerante
+        </div>
+        <div class="fluido-opciones">
+          <label><input type="radio" name="agua" value="Optimo" required> Óptimo</label>
+          <label><input type="radio" name="agua" value="Medio"> Medio</label>
+          <label class="opt-bajo"><input type="radio" name="agua" value="Bajo">
+            <span class="aviso">Bajo
+              <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5l9.5 16.5h-19z"/><path d="M12 10v4"/><path d="M12 17h.01"/></svg></span>
+            </span>
+          </label>
+        </div>
+      </div>
+
+      <!-- CONTROL DE LÍQUIDO DE FRENOS -->
+      <div class="fluido">
+        <div class="fluido-titulo">
+          <span class="icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="3"/></svg>
+          </span>
+          Líquido de Frenos
+        </div>
+        <div class="fluido-opciones">
+          <label><input type="radio" name="fluido" value="Optimo" required> Óptimo</label>
+          <label><input type="radio" name="fluido" value="Medio"> Medio</label>
+          <label class="opt-bajo"><input type="radio" name="fluido" value="Bajo">
+            <span class="aviso">Bajo
+              <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5l9.5 16.5h-19z"/><path d="M12 10v4"/><path d="M12 17h.01"/></svg></span>
+            </span>
+          </label>
+        </div>
+      </div>
+
+      <!-- CONTROL DE OTROS FLUIDOS -->
+      <div class="fluido" style="margin-bottom:0;">
+        <div class="fluido-titulo">
+          <span class="icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 5.5v2.2M12 16.3v2.2M5.5 12h2.2M16.3 12h2.2M7.4 7.4l1.6 1.6M15 15l1.6 1.6M16.6 7.4L15 9M9 15l-1.6 1.6"/></svg>
+          </span>
+          Dirección / Hidráulico
+        </div>
+        <div class="fluido-opciones">
+          <label><input type="radio" name="otros_fluidos" value="Optimo" required> Óptimo</label>
+          <label><input type="radio" name="otros_fluidos" value="Medio"> Medio</label>
+          <label class="opt-bajo"><input type="radio" name="otros_fluidos" value="Bajo">
+            <span class="aviso">Bajo
+              <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5l9.5 16.5h-19z"/><path d="M12 10v4"/><path d="M12 17h.01"/></svg></span>
+            </span>
+          </label>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. SISTEMA DE ILUMINACIÓN -->
+    <section class="bloque">
+      <h3 class="bloque-titulo">
+        <span class="icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"/><path d="M10 21h4"/><path d="M12 3a6.5 6.5 0 0 0-3.8 11.8c.5.4.8 1 .8 1.7h6c0-.7.3-1.3.8-1.7A6.5 6.5 0 0 0 12 3z"/></svg>
+        </span>
+        Sistema de Iluminación
+      </h3>
+      <div class="luces-grid">
+        <label class="checkbox-group">
+          <span class="icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M9 9l6 6M15 9l-6 6"/></svg>
+          </span>
+          <span>Luces de Freno funcionan</span>
+          <input type="checkbox" name="luces_freno" value="true">
+        </label>
+        <label class="checkbox-group">
+          <span class="icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5h7l3-4v11l-3-4H3z"/><path d="M15 9.5h5.5M15 14.5h5.5"/></svg>
+          </span>
+          <span>Luz Baja funciona</span>
+          <input type="checkbox" name="luz_baja" value="true">
+        </label>
+        <label class="checkbox-group">
+          <span class="icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5h7l3-4v11l-3-4H3z"/><path d="M15 7.5h5.5M15 12h5.5M15 16.5h5.5"/></svg>
+          </span>
+          <span>Luz Alta funciona</span>
+          <input type="checkbox" name="luz_alta" value="true">
+        </label>
+        <label class="checkbox-group">
+          <span class="icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h9"/><path d="M9 7l5 5-5 5"/><path d="M16 7l5 5-5 5"/></svg>
+          </span>
+          <span>Señaleros / Luces de giro OK</span>
+          <input type="checkbox" name="senaleros" value="true">
+        </label>
+      </div>
+    </section>
+
+    <!-- 4. RODAJE Y COMBUSTIBLE GENERAL -->
+    <section class="bloque">
+      <h3 class="bloque-titulo">
+        <span class="icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="2.4"/><path d="M12 5.5v2.4M12 16.1v2.4M6.4 8.7l2 1.2M15.6 14.1l2 1.2M6.4 15.3l2-1.2M15.6 9.9l2-1.2"/></svg>
+        </span>
+        Rodaje y Combustible
+      </h3>
+      <div class="fila-doble">
+        <div class="campo">
+          <label for="kilometraje_actual">Kilometraje Actual (KM):</label>
+          <input type="number" name="kilometraje_actual" id="kilometraje_actual" min="0" placeholder="Ingrese los kilómetros del tablero" required>
+        </div>
+        <div class="campo">
+          <label for="combustible_nivel">Nivel de Combustible Actual:</label>
+          <select name="combustible_nivel" id="combustible_nivel" required>
+              <option value="Lleno">Lleno 1/1</option>
+              <option value="3/4">3/4 Tanque</option>
+              <option value="1/2">1/2 Tanque</option>
+              <option value="1/4">1/4 Tanque</option>
+              <option value="Reserva">Reserva</option>
+          </select>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. CONTROL PARALELO DE ABASTECIMIENTO -->
+    <section class="bloque bloque-destacado">
+      <h3 class="bloque-titulo">
+        <span class="icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V6a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v15"/><path d="M4 21h10"/><path d="M14 10.5h2.2l2.3 2.3v5.2a1.5 1.5 0 0 1-3 0V16"/><circle cx="6.8" cy="7.5" r=".9" fill="currentColor" stroke="none"/></svg>
+        </span>
+        Control de Carga Paralela (Si cargó hoy)
+      </h3>
+
+      <div class="campo">
+        <label for="fecha_abastecimiento">Día de Carga / Abastecimiento:</label>
+        <input type="text" name="fecha_abastecimiento" id="fecha_abastecimiento" placeholder="Día/Mes/Año (Ej: 30/08/2026)">
+      </div>
+
+      <div class="fila-doble">
+        <div class="campo">
+          <label for="litros_cargados">Cantidad de Litros:</label>
+          <input type="number" step="0.01" name="litros_cargados" id="litros_cargados" placeholder="Ej: 45.5">
+        </div>
+        <div class="campo">
+          <label for="monto_gastado">Monto Total Gastado (Guaraníes ₲):</label>
+          <input type="number" name="monto_gastado" id="monto_gastado" placeholder="Ej: 350000">
+        </div>
+      </div>
+    </section>
+
+    <section class="bloque">
+      <div class="campo" style="margin-bottom:0;">
+        <label for="estado_cubiertas">Estado de las Cubiertas:</label>
+        <select name="estado_cubiertas" id="estado_cubiertas" required>
+            <option value="Bueno">Bueno — Sin desgaste crítico</option>
+            <option value="Regular">Regular — Requiere atención pronto</option>
+            <option value="Critico">Crítico — Necesita cambio urgente</option>
+        </select>
+      </div>
+    </section>
+
+    <!-- 6. NOVEDADES EXTRA -->
+    <section class="bloque">
+      <h3 class="bloque-titulo">
+        <span class="icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5V6a2 2 0 0 1 2-2h9.5L20 8.5V18a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><path d="M14.5 4.2V8a1 1 0 0 0 1 1h3.3"/><path d="M8 12.5h8M8 15.7h5.5"/></svg>
+        </span>
+        Novedades u Observaciones Mecánicas
+      </h3>
+      <div class="campo" style="margin-bottom:0;">
+        <label for="observaciones_mecanica">Detalle cualquier desperfecto o comentario extra:</label>
+        <input type="text" name="observaciones_mecanica" id="observaciones_mecanica" placeholder="Ej: Dirección dura o amortiguador ruidoso">
+      </div>
+    </section>
+
+    <button type="submit">
+      <span class="icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 3.5L11 13.2"/><path d="M21.5 3.5L14.8 21l-3.8-7.8-7.8-3.8z"/></svg>
+      </span>
+      Enviar Control Diario
+    </button>
+  </form>
+</div>
+{% endblock %}
