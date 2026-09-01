@@ -213,6 +213,15 @@
   .cv .checkbox-group:has(input:checked){background:var(--primary-soft);}
   .cv .checkbox-group:has(input:checked) .icon{color:var(--primary);}
 
+  /* --- Campo "Otro" de iluminación (aparece sólo si el checkbox está marcado) --- */
+  .cv .otro-detalle{
+    display:none;
+    margin-top:12px;
+  }
+  .cv .luces-grid:has(#luz_otro_check:checked) + .otro-detalle{
+    display:block;
+  }
+
   /* --- Carga paralela --- */
   .cv .bloque-destacado{background:var(--primary-soft);}
   .cv .bloque-destacado .campo label{color:var(--primary-dark);}
@@ -424,6 +433,17 @@
           <span>Señaleros / Luces de giro OK</span>
           <input type="checkbox" name="senaleros" value="true">
         </label>
+        <label class="checkbox-group">
+          <span class="icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5v5.5l3.5 2"/></svg>
+          </span>
+          <span>Otro</span>
+          <input type="checkbox" name="luz_otro" id="luz_otro_check" value="true">
+        </label>
+      </div>
+      <div class="campo otro-detalle">
+        <label for="luz_otro_detalle">Descripción del problema:</label>
+        <input type="text" name="luz_otro_detalle" id="luz_otro_detalle" placeholder="Ej: Luz de patente quemada">
       </div>
     </section>
 
