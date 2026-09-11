@@ -417,16 +417,20 @@ def informe_pdf(user_id):
     )
 
 # ==========================================
-# INICIALIZACIÓN (YA NO BORRA DATOS EXISTENTES)
+# ESTO SE EJECUTA SIEMPRE QUE SE CARGA app.py
+# (tanto con "python app.py" como con Gunicorn: gunicorn app:app)
+# ==========================================
+arreglar_base_datos_si_hace_falta()
+
+with app.app_context():
+    db.create_all()  # crea sólo lo que falte; no toca tablas ni datos existentes
+    if Usuario.query.count() == 0:
+        db.session.add(Usuario(nombre="Oscar", contrasena="", rol="Admin", activo=True))
+        db.session.commit()
+
+# ==========================================
+# ESTO SOLO SE EJECUTA SI CORRÉS "python app.py" DIRECTO
+# (en producción con Gunicorn, esta parte no se usa)
 # ==========================================
 if __name__ == "__main__":
-    arreglar_base_datos_si_hace_falta()
-
-    with app.app_context():
-        db.create_all()  # crea sólo lo que falte; no toca tablas ni datos existentes
-
-        if Usuario.query.count() == 0:
-            db.session.add(Usuario(nombre="Oscar", contrasena="", rol="Admin", activo=True))
-            db.session.commit()
-
-        app.run(debug=True, host='0.0.0.0', port=8080)
+    app.run(debug=True, host='0.0.0.0', port=8080)
