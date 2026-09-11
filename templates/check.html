@@ -282,7 +282,7 @@
         <span class="icon" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="16" rx="2.2"/><path d="M3.5 9.5h17"/><path d="M8 3v4"/><path d="M16 3v4"/></svg>
         </span>
-        Fecha de control: <strong>30/08/2026</strong>
+        Fecha de control: <strong>{{ fecha_hoy }}</strong>
       </div>
     </div>
   </div>
@@ -494,7 +494,7 @@
         </div>
         <div class="campo">
           <label for="monto_gastado">Monto Total Gastado (Guaraníes ₲):</label>
-          <input type="number" name="monto_gastado" id="monto_gastado" placeholder="Ej: 350000">
+          <input type="text" inputmode="numeric" name="monto_gastado" id="monto_gastado" placeholder="Ej: 350.000" oninput="formatearMonto(this)">
         </div>
       </div>
     </section>
@@ -532,4 +532,21 @@
     </button>
   </form>
 </div>
+
+<script>
+  // Formatea el monto con puntos de miles (Ej: 350.000) mientras el usuario escribe.
+  function formatearMonto(input) {
+    var soloDigitos = input.value.replace(/\D/g, "");
+    input.value = soloDigitos ? new Intl.NumberFormat("es-PY").format(soloDigitos) : "";
+  }
+
+  // Justo antes de enviar el formulario, se sacan los puntos para que
+  // el número llegue limpio al servidor (200.000 -> 200000).
+  document.querySelector(".cv form").addEventListener("submit", function () {
+    var montoInput = document.getElementById("monto_gastado");
+    if (montoInput.value) {
+      montoInput.value = montoInput.value.replace(/\./g, "");
+    }
+  });
+</script>
 {% endblock %}

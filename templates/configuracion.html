@@ -27,6 +27,29 @@
   .pa .icon{display:inline-flex;flex-shrink:0;line-height:0;vertical-align:middle;}
   .pa .icon svg{width:100%;height:100%;display:block;}
 
+  .pa .informe-pdf-wrap{
+    display:flex;
+    justify-content:flex-end;
+    margin-bottom:18px;
+  }
+  .pa .btn-informe-pdf{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    background:var(--danger);
+    color:#fff;
+    text-decoration:none;
+    font-size:13.5px;
+    font-weight:700;
+    padding:11px 18px;
+    border-radius:var(--radius-md);
+    box-shadow:var(--shadow-card);
+    transition:filter .15s ease, transform .1s ease;
+  }
+  .pa .btn-informe-pdf .icon{width:17px;height:17px;}
+  .pa .btn-informe-pdf:hover{filter:brightness(0.92);}
+  .pa .btn-informe-pdf:active{transform:translateY(1px);}
+
   .pa .seccion-flex{
     display:flex;
     flex-wrap:wrap;
@@ -161,6 +184,25 @@
     font-weight:700;
   }
 
+  .pa .ultimo-chofer{
+    font-weight:600;
+    color:var(--ink);
+  }
+  .pa .ultimo-chofer.sin-registro{
+    color:var(--ink-faint);
+    font-weight:500;
+    font-style:italic;
+  }
+  .pa .ultima-fecha{
+    font-size:12.5px;
+    color:var(--ink-faint);
+  }
+  .pa .etiqueta-provisoria{
+    font-size:10.5px;
+    color:var(--ink-faint);
+    font-style:italic;
+  }
+
   .pa .btn-guardar{
     display:inline-flex;
     align-items:center;
@@ -180,6 +222,22 @@
   .pa .btn-guardar:hover{filter:brightness(0.92);}
   .pa .btn-guardar.amber{background:var(--amber);}
   .pa .btn-guardar.verde{background:var(--green);}
+  .pa .btn-guardar.rojo{background:var(--danger);}
+
+  .pa .clave-confirmacion{
+    display:block;
+    width:100%;
+    max-width:150px;
+    margin:0 auto 8px;
+    padding:6px 8px;
+    font-size:12px;
+  }
+  .pa .acciones-fila{
+    display:flex;
+    gap:6px;
+    justify-content:center;
+    flex-wrap:wrap;
+  }
 
   /* --- Responsivo: tabla a tarjetas apiladas en pantallas chicas --- */
   @media (max-width:760px){
@@ -212,6 +270,18 @@
 </style>
 
 <div class="pa">
+
+<!-- ======================================================= -->
+<!-- BOTÓN: DESCARGAR INFORME COMPLETO EN PDF                -->
+<!-- ======================================================= -->
+<div class="informe-pdf-wrap">
+    <a href="/informe-pdf/{{ usuario.id }}" class="btn-informe-pdf">
+        <span class="icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/><path d="M12 12v6"/><path d="M9.5 15.5L12 18l2.5-2.5"/></svg>
+        </span>
+        Descargar Informe Completo (PDF)
+    </a>
+</div>
 
 <!-- ======================================================= -->
 <!-- BLOQUE 1: FORMULARIOS DE ALTA DE NUEVOS REGISTROS      -->
@@ -275,6 +345,15 @@
             <div class="campo">
                 <label for="ano">Año del Vehículo:</label>
                 <input type="number" name="ano" id="ano" placeholder="Ej: 2024" required>
+            </div>
+            <div class="campo">
+                <label for="chofer_asignado_id">Chofer Asignado:</label>
+                <select name="chofer_asignado_id" id="chofer_asignado_id">
+                    <option value="">Sin asignar</option>
+                    {% for u in usuarios %}
+                        <option value="{{ u.id }}">{{ u.nombre }}</option>
+                    {% endfor %}
+                </select>
             </div>
             <button type="submit" class="verde">
               <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg></span>
@@ -361,35 +440,63 @@
                 <th>Marca</th>
                 <th>Modelo</th>
                 <th>Año</th>
+                <th>Chofer Asignado</th>
+                <th>Último Chofer</th>
+                <th>Última Fecha</th>
                 <th class="centro">Acción</th>
             </tr>
         </thead>
         <tbody>
             {% for v in vehiculos %}
             <tr>
-                <form action="/editar-vehiculo" method="POST">
+                <form action="/editar-vehiculo" method="POST" id="form-vehiculo-{{ v.id }}">
                     <input type="hidden" name="admin_id" value="{{ usuario.id }}">
                     <input type="hidden" name="vehiculo_id_editar" value="{{ v.id }}">
 
                     <td data-label="Nro. Móvil">
-                        <input type="number" name="nro_editado" value="{{ v.nro_movil }}" required class="nro-movil-input">
+                        <input type="number" name="nro_editado" value="{{ v.nro_movil }}" required class="nro-movil-input" form="form-vehiculo-{{ v.id }}">
                     </td>
                     <td data-label="Marca">
-                        <input type="text" name="marca_editada" value="{{ v.marca }}" required>
+                        <input type="text" name="marca_editada" value="{{ v.marca }}" required form="form-vehiculo-{{ v.id }}">
                     </td>
                     <td data-label="Modelo">
-                        <input type="text" name="modelo_editado" value="{{ v.modelo }}" required>
+                        <input type="text" name="modelo_editado" value="{{ v.modelo }}" required form="form-vehiculo-{{ v.id }}">
                     </td>
                     <td data-label="Año">
-                        <input type="number" name="ano_editado" value="{{ v.ano }}" required>
+                        <input type="number" name="ano_editado" value="{{ v.ano }}" required form="form-vehiculo-{{ v.id }}">
                     </td>
-                    <td data-label="Acción" class="accion" style="text-align:center;">
-                        <button type="submit" class="btn-guardar verde">
+                    <td data-label="Chofer Asignado">
+                        <select name="chofer_asignado_editado" form="form-vehiculo-{{ v.id }}">
+                            <option value="">Sin asignar</option>
+                            {% for u in usuarios %}
+                                <option value="{{ u.id }}" {% if v.chofer_asignado_id == u.id %}selected{% endif %}>{{ u.nombre }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                </form>
+
+                <!-- Sólo lectura: dato real del último Checklist, o el chofer asignado si aún no hay ninguno -->
+                <td data-label="Último Chofer">
+                    <span class="ultimo-chofer {% if not v.uso_confirmado %}sin-registro{% endif %}">{{ v.ultimo_chofer }}</span>
+                    {% if not v.uso_confirmado %}<br><small class="etiqueta-provisoria">(sin check aún)</small>{% endif %}
+                </td>
+                <td data-label="Última Fecha">
+                    <span class="ultima-fecha">{{ v.ultima_fecha }}</span>
+                </td>
+
+                <td data-label="Acción" class="accion" style="text-align:center;">
+                    <input type="password" name="clave_confirmacion" form="form-vehiculo-{{ v.id }}" placeholder="Contraseña" required class="clave-confirmacion">
+                    <div class="acciones-fila">
+                        <button type="submit" form="form-vehiculo-{{ v.id }}" formaction="/editar-vehiculo" class="btn-guardar verde">
                           <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h11l3 3v13H5z"/><path d="M8 4v5h7V4"/><path d="M8 13h8v6H8z"/></svg></span>
                           Guardar
                         </button>
-                    </td>
-                </form>
+                        <button type="submit" form="form-vehiculo-{{ v.id }}" formaction="/eliminar-vehiculo/{{ v.id }}" class="btn-guardar rojo" onclick="return confirm('¿Eliminar el Móvil {{ v.nro_movil }} ({{ v.marca }} {{ v.modelo }})? Esta acción no se puede deshacer.');">
+                          <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16"/><path d="M9 7V4.5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1V7"/><path d="M6 7l1 13a1.5 1.5 0 0 0 1.5 1.4h7a1.5 1.5 0 0 0 1.5-1.4L18 7"/></svg></span>
+                          Eliminar
+                        </button>
+                    </div>
+                </td>
             </tr>
             {% endfor %}
         </tbody>
