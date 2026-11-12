@@ -37,6 +37,9 @@ app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
 # Clave compartida con SPYnet para el ingreso directo.
 # Tiene que ser EXACTAMENTE la misma que SSO_SECRET en el app.py de SPYnet.
 # (Si algún día se define SSO_SECRET en un .env, se usa esa en lugar de esta.)
+# Menú de SPYnet: a donde lleva el botón "Volver al menú" a quien entró desde SPYnet
+SPYNET_MENU_URL = os.environ.get("SPYNET_MENU_URL") or "https://asistenciasapp.spynetpy.com/menu"
+
 SSO_SECRET = os.environ.get("SSO_SECRET") or "4526185811c46a455c4e91710a766fa1242943a7ac0cf535bc070f292da3d292"
 
 # ==========================================
@@ -227,7 +230,7 @@ def registrar(accion, detalle="", usuario=None):
         db.session.rollback()
         print(f"⚠️ No se pudo registrar la auditoría: {e}")
 
-RUTAS_PUBLICAS = {"login_web", "autenticar", "sso_spynet", "salir", "static"}
+RUTAS_PUBLICAS = {"login_web", "autenticar", "sso_spynet", "salir", "volver_al_menu", "static"}
 
 @app.before_request
 def exigir_sesion():
@@ -326,6 +329,7 @@ def sso_spynet():
                        url_for("login_web"), "Volver")
 
     iniciar_sesion(u)
+    session["via_spynet"] = True      # el botón de arriba dirá "Volver al menú" en vez de "Salir"
     if novedad:
         registrar(novedad[0], novedad[1] + f" · Rol: {u.rol}", usuario=u)
     registrar("Inicio de sesión (SPYnet)", f"Ingreso directo desde SPYnet como '{usuario_spynet}'", usuario=u)
@@ -383,6 +387,20 @@ def salir():
         registrar("Cierre de sesión", "", usuario=u)
     session.clear()
     return redirect(url_for("login_web"))
+
+@app.route("/volver-al-menu")
+def volver_al_menu():
+    """Para quien entró desde SPYnet: cierra la sesión de Movil Check y vuelve al menú de SPYnet."""
+    u = usuario_actual()
+    if u:
+        registrar("Volvió al menú de SPYnet", "", usuario=u)
+    session.clear()
+    return redirect(SPYNET_MENU_URL)
+
+@app.context_processor
+def datos_de_salida():
+    """Las plantillas saben si mostrar "Volver al menú" (entró desde SPYnet) o "Salir"."""
+    return {"via_spynet": bool(session.get("via_spynet"))}
 
 # ==========================================
 # PESTAÑAS
