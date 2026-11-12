@@ -1,3 +1,6 @@
+{# ========================================================
+   DÓNDE VA: MOVIL CHECK (movilcheck.spynetpy.com) -> carpeta templates de Movil Check. Renombrar a: registros.html
+   ======================================================== #}
 {% extends "base.html" %}
 {% block contenido %}
 <style>
@@ -129,6 +132,12 @@
   .ph .luz-chip .icon{width:12px;height:12px;}
   .ph .luz-chip.ok{color:var(--ok-fg);}
   .ph .luz-chip.alerta{color:var(--danger);}
+  .ph .luz-otro{
+    display:block;
+    margin-top:5px;
+    font-size:11.5px;
+    color:var(--danger);
+  }
 
   .ph .km{font-weight:700;}
   .ph .tanque-chip{
@@ -177,6 +186,17 @@
     color:var(--ink-faint);
   }
   .ph .toolbar .resumen strong{color:var(--ink-soft);font-weight:600;}
+
+  /* --- Botón Descargar PDF --- */
+  .ph .btn-pdf{
+    display:inline-flex;align-items:center;gap:7px;
+    background:var(--primary);color:#fff;
+    font-size:13px;font-weight:600;text-decoration:none;
+    padding:8px 14px;border-radius:var(--radius-sm);
+    transition:background .15s ease;
+  }
+  .ph .btn-pdf:hover{background:var(--primary-dark);}
+  .ph .btn-pdf .icon{width:16px;height:16px;}
 
   /* --- Paginación --- */
   .ph .paginacion{
@@ -247,6 +267,7 @@
       letter-spacing:.03em;
       color:var(--ink-faint);
     }
+    .ph .btn-pdf{width:100%;justify-content:center;}
   }
 </style>
 
@@ -266,6 +287,13 @@
           Sin registros para mostrar
         {% endif %}
       </span>
+
+      {% if paginacion and paginacion.total %}
+      <a class="btn-pdf" href="{{ url_for('historial_pdf', user_id=usuario.id) }}">
+        <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11"/><path d="M7.5 10.5L12 15l4.5-4.5"/><path d="M5 19h14"/></svg></span>
+        Descargar PDF
+      </a>
+      {% endif %}
     </div>
 
     <div class="tabla-wrap">
@@ -304,7 +332,7 @@
                 <!-- 3. NOMBRE DE INSPECTOR Y ROL -->
                 <td data-label="Inspector" class="inspector">{{ c.usuario.nombre }} <br><small>({{ c.usuario.rol }})</small></td>
 
-                <!-- 4. NIVELES DE FLUIDOS (EVALUACIÓN DE STRINGS LIMPIA) -->
+                <!-- 4. NIVELES DE FLUIDOS -->
                 <td data-label="Niveles de Fluidos">
                     <!-- Control de Aceite -->
                     {% if c.aceite == 'Bajo' %}
@@ -346,7 +374,7 @@
                     {% endif %}
                 </td>
 
-                <!-- 5. ESTADO DE LUCES (BOOLEANOS) -->
+                <!-- 5. ESTADO DE LUCES -->
                 <td data-label="Luces">
                     <div class="luces-set">
                         <span class="luz-chip {% if c.luces_freno %}ok{% else %}alerta{% endif %}">
@@ -366,6 +394,9 @@
                           Giro
                         </span>
                     </div>
+                    {% if c.luz_otro %}
+                        <span class="luz-otro"><strong>Otro:</strong> {{ c.luz_otro_detalle or 'sin detalle' }}</span>
+                    {% endif %}
                 </td>
 
                 <!-- 6. KILOMETRAJE Y NIVEL DEL TANQUE -->
@@ -390,7 +421,7 @@
                         </div>
                         <div class="abastecimiento-linea">
                           <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5v9M9.5 9.7c0-1.2 1.1-2.2 2.5-2.2s2.5.8 2.5 1.9-1 1.6-2.5 1.9-2.5.8-2.5 1.9 1.1 1.9 2.5 1.9 2.5-1 2.5-2.2"/></svg></span>
-                          Gasto: <span class="gasto">₲ {{ c.monto_gastado }}</span>
+                          Gasto: <span class="gasto">₲ {{ "{:,.0f}".format((c.monto_gastado or 0)|float).replace(",", ".") }}</span>
                         </div>
                     {% else %}
                         <span class="sin-datos">Sin cargas hoy</span>

@@ -1,3 +1,6 @@
+{# ========================================================
+   DÓNDE VA: MOVIL CHECK (movilcheck.spynetpy.com) -> carpeta templates de Movil Check. Renombrar a: configuracion.html
+   ======================================================== #}
 {% extends "base.html" %}
 {% block contenido %}
 <style>
@@ -30,6 +33,8 @@
   .pa .informe-pdf-wrap{
     display:flex;
     justify-content:flex-end;
+    flex-wrap:wrap;
+    gap:10px;
     margin-bottom:18px;
   }
   .pa .btn-informe-pdf{
@@ -46,6 +51,7 @@
     box-shadow:var(--shadow-card);
     transition:filter .15s ease, transform .1s ease;
   }
+  .pa .btn-informe-pdf.oscuro{background:#0f172a;}
   .pa .btn-informe-pdf .icon{width:17px;height:17px;}
   .pa .btn-informe-pdf:hover{filter:brightness(0.92);}
   .pa .btn-informe-pdf:active{transform:translateY(1px);}
@@ -89,6 +95,12 @@
     font-weight:600;
     color:var(--ink-soft);
     margin-bottom:6px;
+  }
+  .pa .campo .ayuda{
+    display:block;
+    font-size:12px;
+    color:var(--ink-faint);
+    margin-top:5px;
   }
   .pa select,
   .pa input[type="text"],
@@ -266,16 +278,24 @@
       color:var(--ink-faint);
     }
     .pa tbody td.accion{align-items:flex-start;}
+    .pa .informe-pdf-wrap{justify-content:stretch;}
+    .pa .btn-informe-pdf{flex:1 1 100%;justify-content:center;}
   }
 </style>
 
 <div class="pa">
 
 <!-- ======================================================= -->
-<!-- BOTÓN: DESCARGAR INFORME COMPLETO EN PDF                -->
+<!-- BOTONES: DESCARGAR INFORMES EN PDF                      -->
 <!-- ======================================================= -->
 <div class="informe-pdf-wrap">
-    <a href="/informe-pdf/{{ usuario.id }}" class="btn-informe-pdf">
+    <a href="{{ url_for('auditoria_pdf') }}" class="btn-informe-pdf oscuro">
+        <span class="icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v4l3 2"/><circle cx="12" cy="12" r="8.5"/></svg>
+        </span>
+        Registro de Actividad (PDF)
+    </a>
+    <a href="{{ url_for('informe_pdf', user_id=usuario.id) }}" class="btn-informe-pdf">
         <span class="icon" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/><path d="M12 12v6"/><path d="M9.5 15.5L12 18l2.5-2.5"/></svg>
         </span>
@@ -312,6 +332,11 @@
                     <option value="Mecánico">Mecánico</option>
                     <option value="Admin">Administrador</option>
                 </select>
+            </div>
+            <div class="campo">
+                <label for="usuario_spynet_nuevo">Usuario en SPYnet (opcional):</label>
+                <input type="text" name="usuario_spynet_nuevo" id="usuario_spynet_nuevo" placeholder="Ej: yessica-3">
+                <span class="ayuda">Se completa solo cuando la persona entra desde SPYnet. Cargalo solo si querés vincularla de antemano.</span>
             </div>
             <button type="submit">
               <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg></span>
@@ -380,6 +405,7 @@
                 <th>Nombre</th>
                 <th>Seña / Contraseña</th>
                 <th>Rol de Usuario</th>
+                <th>Usuario SPYnet</th>
                 <th class="centro">Activo</th>
                 <th class="centro">Acción</th>
             </tr>
@@ -403,6 +429,9 @@
                             <option value="Mecánico" {% if u.rol == 'Mecánico' %}selected{% endif %}>Mecánico</option>
                             <option value="Admin" {% if u.rol == 'Admin' %}selected{% endif %}>Admin</option>
                         </select>
+                    </td>
+                    <td data-label="Usuario SPYnet">
+                        <input type="text" name="usuario_spynet_editado" value="{{ u.usuario_spynet or '' }}" placeholder="Sin vincular">
                     </td>
                     <td data-label="Activo" class="accion" style="text-align:center;">
                         <input type="checkbox" name="activo_editado" value="True" {% if u.activo %}checked{% endif %} style="width:19px;height:19px;accent-color:var(--green);">

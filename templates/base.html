@@ -1,3 +1,6 @@
+{# ========================================================
+   DÓNDE VA: MOVIL CHECK (movilcheck.spynetpy.com) -> carpeta templates de Movil Check. Renombrar a: base.html
+   ======================================================== #}
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -157,7 +160,7 @@
         <div class="brand-text-divider" style="width: 2px; height: 20px; background-color: rgba(255,255,255,0.3);"></div>
         <div class="brand-subtitle">SPYComers</div>
     </div>
-    <a href="#" class="btn-salir" id="btnAbrirSalir">
+    <a href="{{ url_for('salir') }}" class="btn-salir" id="btnAbrirSalir">
         <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg></span>
         Salir
     </a>
@@ -208,7 +211,8 @@
         <p>Vas a cerrar tu sesión actual y volver a la pantalla de ingreso.</p>
         <div class="modal-botones">
             <button type="button" class="modal-cancelar" id="btnCancelarSalir">Cancelar</button>
-            <a href="/" class="modal-confirmar" style="display:block; text-decoration:none; text-align:center; padding:13px; border-radius:8px; color:#fff; font-size:15px; font-weight:700; box-sizing:border-box;">Salir</a>
+            <!-- /salir cierra la sesión y deja registrado el cierre en el registro de actividad -->
+            <a href="{{ url_for('salir') }}" class="modal-confirmar" style="display:block; text-decoration:none; text-align:center; padding:13px; border-radius:8px; color:#fff; font-size:15px; font-weight:700; box-sizing:border-box;">Salir</a>
         </div>
     </div>
 </div>
